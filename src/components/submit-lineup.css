@@ -1,0 +1,11 @@
+.positions-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 10px;
+}
+
+.dropdown {
+  width: 300px;
+  margin: 5px 0px;
+}
