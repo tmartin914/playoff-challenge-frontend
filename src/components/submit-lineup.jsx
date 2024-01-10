@@ -4,6 +4,7 @@ import PlayerService from "../services/player.service";
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
 export const SubmitLineup = () => {
+  const ROUNDS = ['Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
   const [qb, setQB] = useState();
   const [rb1, setRB1] = useState();
   const [rb2, setRB2] = useState();
@@ -20,6 +21,7 @@ export const SubmitLineup = () => {
   const [dsts, setDSTs] = useState();
   const [teamId, setTeamId] = useState();
   const [loading, setLoading] = useState(false);
+  const [round, setRound] = useState(ROUNDS[0]);
 
   const getAllPlayers = () => {
     PlayerService.getAll()
@@ -36,7 +38,7 @@ export const SubmitLineup = () => {
   const loadLineup = () => {
     if (teamId) {
       setLoading(true);
-      PlayerService.getLineup(teamId)
+      PlayerService.getLineup(teamId, round)
         .then(response => {
           if (response && response.data){
             const test = qbs.find(q => q.id === response.data.qbId);
@@ -60,14 +62,14 @@ export const SubmitLineup = () => {
 
   const submitLineup = () => {
     if (teamId) {
-      const lineup = { teamId: teamId, qb: qb.id, rb1: rb1.id, rb2: rb2.id, wr1: wr1.id, wr2: wr2.id, te: te.id, k: k.id, dst: dst.id }
+      const lineup = { teamId: teamId, round: round, qb: qb.id, rb1: rb1.id, rb2: rb2.id, wr1: wr1.id, wr2: wr2.id, te: te.id, k: k.id, dst: dst.id }
       PlayerService.submitLineup(lineup).then();
     }
   }
 
   const quickSubmitLineup = () => {
     if (teamId) {
-      const lineup = { teamId: teamId, qb: qbs[0].id, rb1: rbs[0].id, rb2: rbs[1].id, wr1: wrs[0].id, wr2: wrs[1].id, te: tes[0].id, k: ks[0].id, dst: dsts[0].id }
+      const lineup = { teamId: teamId, round: round, qb: qbs[0].id, rb1: rbs[0].id, rb2: rbs[1].id, wr1: wrs[0].id, wr2: wrs[1].id, te: tes[0].id, k: ks[0].id, dst: dsts[0].id }
       PlayerService.submitLineup(lineup).then();
     }
   }
@@ -108,13 +110,27 @@ export const SubmitLineup = () => {
     setDST(dsts.find(dst => dst.id === event.target.value.id));
   }
 
+  const isFormValid = () => {
+    return qb && rb1 && rb2 && wr1 && wr2 && te && k && dst && teamId;
+  }
+
   if (loading) {
     return <></>;
   }
 
   return (
     <>
-      <div>Submit Lineup</div>
+      <h3>Submit Lineup</h3>
+      <FormControl sx={{ width: '300px', margin: '5px 20px' }}>
+        <InputLabel>Round</InputLabel>
+        <Select
+          value={round}
+          label="Round"
+          onChange={(e) => setRound(e.target.value)}
+        >
+          { ROUNDS.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>) }
+        </Select>
+      </FormControl>
       <Button onClick={loadPlayers}>Load Players</Button>
       { ks && ks.length > 0 ?
         <fieldset className='positions-wrapper'>
@@ -198,62 +214,6 @@ export const SubmitLineup = () => {
               { dsts.map(dst => <MenuItem key={dst.name} value={dst}>{dst.name} ({dst.team})</MenuItem>) }
             </Select>
           </FormControl>
-          {/* <select className="dropdown"
-            value={qb}
-            label="QB"
-            onChange={handleQBChange}
-          >
-            { qbs.map(qb => <option key={qb.name} value={qb}>{qb.name} ({qb.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={rb1}
-            label="RB1"
-            onChange={handleRB1Change}
-          >
-            { rbs.map(rb => <option key={rb.name} value={rb}>{rb.name} ({rb.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={rb2}
-            label="RB2"
-            onChange={handleRB2Change}
-          >
-            { rbs.map(rb => <option key={rb.name} value={rb}>{rb.name} ({rb.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={wr1}
-            label="WR1"
-            onChange={handleWR1Change}
-          >
-            { wrs.map(wr => <option key={wr.name} value={wr}>{wr.name} ({wr.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={wr2}
-            label="WR2"
-            onChange={handleWR2Change}
-          >
-            { wrs.map(wr => <option key={wr.name} value={wr}>{wr.name} ({wr.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={te}
-            label="TE"
-            onChange={handleTEChange}
-          >
-            { tes.map(te => <option key={te.name} value={te}>{te.name} ({te.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={k}
-            label="K"
-            onChange={handleKChange}
-          >
-            { ks.map(k => <option key={k.name} value={k}>{k.name} ({k.team})</option>) }
-          </select>
-          <select className="dropdown"
-            value={dst}
-            label="DST"
-            onChange={handleDSTChange}
-          >
-            { dsts.map(dst => <option key={dst.name} value={dst}>{dst.name} ({dst.team})</option>) }
-          </select> */}
           <TextField
             variant="outlined"
             size="small"
@@ -262,9 +222,9 @@ export const SubmitLineup = () => {
             label="Team Id"
             sx={{ width: '100%', marginTop: '5px'}}
           />
-          <Button onClick={submitLineup}>Submit Lineup</Button>
-          <Button onClick={loadLineup}>Load Lineup</Button>
-          <Button onClick={quickSubmitLineup}>Quick Submit Lineup</Button>
+          <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
+          <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
+          <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button>
         </fieldset>
         : <></>
       }
