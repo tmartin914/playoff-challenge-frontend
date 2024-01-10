@@ -118,114 +118,116 @@ export const SubmitLineup = () => {
 
   return (
     <>
-      <h3>Submit Lineup</h3>
-      <FormControl sx={{ width: '300px', margin: '5px 20px' }}>
-        <InputLabel>Round</InputLabel>
-        <Select
-          value={round}
-          label="Round"
-          onChange={(e) => setRound(e.target.value)}
-        >
-          { ROUNDS.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>) }
-        </Select>
-      </FormControl>
-      { ks && ks.length > 0 ?
-        <fieldset className='positions-wrapper'>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>QB</InputLabel>
-            <Select
-              value={qb}
-              label="QB"
-              onChange={handleQBChange}
-            >
-              { qbs.map(qb => <MenuItem key={qb.name} value={qb}>{qb.name} ({qb.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>RB1</InputLabel>
-            <Select
-              value={rb1}
-              label="RB1"
-              onChange={handleRB1Change}
-            >
-              { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>RB2</InputLabel>
-            <Select
-              value={rb2}
-              label="RB2"
-              onChange={handleRB2Change}
-            >
-              { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>WR1</InputLabel>
-            <Select
-              value={wr1}
-              label="WR1"
-              onChange={handleWR1Change}
-            >
-              { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>WR2</InputLabel>
-            <Select
-              value={wr2}
-              label="WR2"
-              onChange={handleWR2Change}
-            >
-              { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>TE</InputLabel>
-            <Select
-              value={te}
-              label="TE"
-              onChange={handleTEChange}
-            >
-              { tes.map(te => <MenuItem key={te.name} value={te}>{te.name} ({te.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>K</InputLabel>
-            <Select
-              value={k}
-              label="K"
-              onChange={handleKChange}
-            >
-              { ks.map(k => <MenuItem key={k.name} value={k}>{k.name} ({k.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
-            <InputLabel>DST</InputLabel>
-            <Select
-              value={dst}
-              label="DST"
-              onChange={handleDSTChange}
-            >
-              { dsts.map(dst => <MenuItem key={dst.name} value={dst}>{dst.name} ({dst.team})</MenuItem>) }
-            </Select>
-          </FormControl>
-          <TextField
-            variant="outlined"
-            size="small"
-            value={teamId}
-            onChange={(e) => {setTeamId(e.target.value); }}
-            label="Team Id"
-            sx={{ width: '100%', marginTop: '5px'}}
-          />
-          <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
-          <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
-          <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button>
-          <Button onClick={navigateToRules}>View Rules/Scoring</Button>
-        </fieldset>
-        : <></>
-      }
+      <div className="submit-lineup-wrapper">
+        <h3>Submit Lineup</h3>
+        <FormControl sx={{ width: '300px', margin: '5px 20px' }}>
+          <InputLabel>Round</InputLabel>
+          <Select
+            value={round}
+            label="Round"
+            onChange={(e) => setRound(e.target.value)}
+          >
+            { ROUNDS.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>) }
+          </Select>
+        </FormControl>
+        { ks && ks.length > 0 ?
+          <fieldset className='positions-wrapper'>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>QB</InputLabel>
+              <Select
+                value={qb}
+                label="QB"
+                onChange={handleQBChange}
+              >
+                { qbs.map(qb => <MenuItem key={qb.name} value={qb}>{qb.name} ({qb.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>RB1</InputLabel>
+              <Select
+                value={rb1}
+                label="RB1"
+                onChange={handleRB1Change}
+              >
+                { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>RB2</InputLabel>
+              <Select
+                value={rb2}
+                label="RB2"
+                onChange={handleRB2Change}
+              >
+                { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>WR1</InputLabel>
+              <Select
+                value={wr1}
+                label="WR1"
+                onChange={handleWR1Change}
+              >
+                { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>WR2</InputLabel>
+              <Select
+                value={wr2}
+                label="WR2"
+                onChange={handleWR2Change}
+              >
+                { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>TE</InputLabel>
+              <Select
+                value={te}
+                label="TE"
+                onChange={handleTEChange}
+              >
+                { tes.map(te => <MenuItem key={te.name} value={te}>{te.name} ({te.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>K</InputLabel>
+              <Select
+                value={k}
+                label="K"
+                onChange={handleKChange}
+              >
+                { ks.map(k => <MenuItem key={k.name} value={k}>{k.name} ({k.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
+              <InputLabel>DST</InputLabel>
+              <Select
+                value={dst}
+                label="DST"
+                onChange={handleDSTChange}
+              >
+                { dsts.map(dst => <MenuItem key={dst.name} value={dst}>{dst.name} ({dst.team})</MenuItem>) }
+              </Select>
+            </FormControl>
+            <TextField
+              variant="outlined"
+              size="small"
+              value={teamId}
+              onChange={(e) => {setTeamId(e.target.value); }}
+              label="Team Id"
+              sx={{ width: '100%', marginTop: '5px'}}
+            />
+            <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
+            <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
+            <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button>
+            <Button onClick={navigateToRules}>View Rules/Scoring</Button>
+          </fieldset>
+          : <></>
+        }
+      </div>
     </>
   );
 }
