@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import './submit-lineup.css';
 import PlayerService from "../services/player.service";
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { useNavigateToRules } from "../navigation/hooks/useNavigateToRules";
 
 export const SubmitLineup = () => {
   const ROUNDS = ['Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
@@ -22,6 +23,7 @@ export const SubmitLineup = () => {
   const [teamId, setTeamId] = useState();
   const [loading, setLoading] = useState(false);
   const [round, setRound] = useState(ROUNDS[0]);
+  const navigateToRules = useNavigateToRules();
 
   const getAllPlayers = () => {
     PlayerService.getAll()
@@ -54,10 +56,6 @@ export const SubmitLineup = () => {
           setLoading(false);
         })
     }
-  }
-
-  const loadPlayers = () => {
-    PlayerService.load().then(getAllPlayers());
   }
 
   const submitLineup = () => {
@@ -131,7 +129,6 @@ export const SubmitLineup = () => {
           { ROUNDS.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>) }
         </Select>
       </FormControl>
-      <Button onClick={loadPlayers}>Load Players</Button>
       { ks && ks.length > 0 ?
         <fieldset className='positions-wrapper'>
           <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -225,6 +222,7 @@ export const SubmitLineup = () => {
           <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
           <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
           <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button>
+          <Button onClick={navigateToRules}>View Rules/Scoring</Button>
         </fieldset>
         : <></>
       }

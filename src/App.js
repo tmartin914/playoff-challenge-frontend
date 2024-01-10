@@ -1,11 +1,11 @@
 import './App.css';
 import React from "react";
-import { SubmitLineup } from './components/submit-lineup';
+import PlayoffChallengeRoutes from './navigation/PlayoffChallengeRoutes';
 
 function App() {
   return (
     <>
-      <SubmitLineup />
+      <PlayoffChallengeRoutes/>
     </>
   );
 }
