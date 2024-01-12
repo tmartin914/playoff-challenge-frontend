@@ -251,10 +251,10 @@ export const SubmitLineup = () => {
               label="Team Id"
               sx={{ width: '100%', marginTop: '5px'}}
             />
-            <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
-            <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
+            <Button onClick={submitLineup} disabled={!isFormValid()} sx={{marginBottom: '10px'}}>Submit Lineup</Button>
+            <Button onClick={loadLineup} disabled={!teamId} sx={{marginBottom: '10px'}}>Load Lineup</Button>
             {/* <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button> */}
-            <Button onClick={navigateToRules}>View Rules/Scoring</Button>
+            <Button onClick={navigateToRules} sx={{marginBottom: '10px'}}>View Rules/Scoring</Button>
             <Button onClick={navigateToStandings}>View Standings</Button>
           </fieldset>
           : <></>
