@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './submit-lineup.css';
 import PlayerService from "../services/player.service";
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useNavigateToRules } from "../navigation/hooks/useNavigateToRules";
 
 export const SubmitLineup = () => {
@@ -24,6 +24,9 @@ export const SubmitLineup = () => {
   const [loading, setLoading] = useState(false);
   const [round, setRound] = useState(ROUNDS[0]);
   const navigateToRules = useNavigateToRules();
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showFailureAlert, setShowFailureAlert] = useState(false);
+  const [failureAlertMsg, setFailureAlertMsg] = useState('');
 
   const getAllPlayers = () => {
     PlayerService.getAll()
@@ -61,7 +64,14 @@ export const SubmitLineup = () => {
   const submitLineup = () => {
     if (teamId) {
       const lineup = { teamId: teamId, round: round, qb: qb.id, rb1: rb1.id, rb2: rb2.id, wr1: wr1.id, wr2: wr2.id, te: te.id, k: k.id, dst: dst.id }
-      PlayerService.submitLineup(lineup).then();
+      PlayerService.submitLineup(lineup).then(resp => {
+        if (resp.data.isSuccessful) {
+          setShowSuccessAlert(true);
+        } else {
+          setFailureAlertMsg(resp.data.message);
+          setShowFailureAlert(true);
+        }
+      });
     }
   }
 
@@ -112,6 +122,10 @@ export const SubmitLineup = () => {
     return qb && rb1 && rb2 && wr1 && wr2 && te && k && dst && teamId;
   }
 
+  const getPlayerForSelect = (player) => {
+    return <MenuItem key={player.name} value={player} disabled={player.locked}>{player.name} ({player.team})</MenuItem>;
+  };
+
   if (loading) {
     return <></>;
   }
@@ -138,8 +152,9 @@ export const SubmitLineup = () => {
                 value={qb}
                 label="QB"
                 onChange={handleQBChange}
+                disabled={qb?.locked}
               >
-                { qbs.map(qb => <MenuItem key={qb.name} value={qb}>{qb.name} ({qb.team})</MenuItem>) }
+                { qbs.map(qb => getPlayerForSelect(qb)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -148,8 +163,9 @@ export const SubmitLineup = () => {
                 value={rb1}
                 label="RB1"
                 onChange={handleRB1Change}
+                disabled={rb1?.locked}
               >
-                { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
+                { rbs.map(rb => getPlayerForSelect(rb)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -158,8 +174,9 @@ export const SubmitLineup = () => {
                 value={rb2}
                 label="RB2"
                 onChange={handleRB2Change}
+                disabled={rb2?.locked}
               >
-                { rbs.map(rb => <MenuItem key={rb.name} value={rb}>{rb.name} ({rb.team})</MenuItem>) }
+                { rbs.map(rb => getPlayerForSelect(rb)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -168,8 +185,9 @@ export const SubmitLineup = () => {
                 value={wr1}
                 label="WR1"
                 onChange={handleWR1Change}
+                disabled={wr1?.locked}
               >
-                { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
+                { wrs.map(wr => getPlayerForSelect(wr)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -178,8 +196,9 @@ export const SubmitLineup = () => {
                 value={wr2}
                 label="WR2"
                 onChange={handleWR2Change}
+                disabled={wr2?.locked}
               >
-                { wrs.map(wr => <MenuItem key={wr.name} value={wr}>{wr.name} ({wr.team})</MenuItem>) }
+                { wrs.map(wr => getPlayerForSelect(wr)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -188,8 +207,9 @@ export const SubmitLineup = () => {
                 value={te}
                 label="TE"
                 onChange={handleTEChange}
+                disabled={te?.locked}
               >
-                { tes.map(te => <MenuItem key={te.name} value={te}>{te.name} ({te.team})</MenuItem>) }
+                { tes.map(te => getPlayerForSelect(te)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -198,8 +218,9 @@ export const SubmitLineup = () => {
                 value={k}
                 label="K"
                 onChange={handleKChange}
+                disabled={k?.locked}
               >
-                { ks.map(k => <MenuItem key={k.name} value={k}>{k.name} ({k.team})</MenuItem>) }
+                { ks.map(k => getPlayerForSelect(k)) }
               </Select>
             </FormControl>
             <FormControl sx={{ width: '300px', margin: '5px 0px' }}>
@@ -208,8 +229,9 @@ export const SubmitLineup = () => {
                 value={dst}
                 label="DST"
                 onChange={handleDSTChange}
+                disabled={dst?.locked}
               >
-                { dsts.map(dst => <MenuItem key={dst.name} value={dst}>{dst.name} ({dst.team})</MenuItem>) }
+                { dsts.map(dst => getPlayerForSelect(dst)) }
               </Select>
             </FormControl>
             <TextField
@@ -228,6 +250,27 @@ export const SubmitLineup = () => {
           : <></>
         }
       </div>
+      <Dialog open={showSuccessAlert}>
+        <DialogTitle>
+          <DialogContentText>
+            Successfully Created Lineup    
+          </DialogContentText>
+        </DialogTitle>
+        <Button onClick={() => setShowSuccessAlert(false)}>OK</Button>
+      </Dialog>
+      <Dialog open={showFailureAlert}>
+        <DialogTitle>Error Creating Lineup</DialogTitle>
+        <DialogContent>{failureAlertMsg}</DialogContent>
+        <Button onClick={() => setShowFailureAlert(false)}>OK</Button>
+      </Dialog>
+      {/* <Alert show={showSuccessAlert} variant="success">
+        Successfully Created Lineup<hr/>
+        <Button onClick={() => setShowSuccessAlert(false)}>OK</Button>
+      </Alert>
+      <Alert show={showFailureAlert} variant="danger">
+        Could not create lineup. {failureAlertMsg}
+        <Button onClick={() => setShowFailureAlert(false)}>OK</Button>
+      </Alert> */}
     </>
   );
 }

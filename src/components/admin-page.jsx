@@ -8,7 +8,7 @@ export const AdminPage = () => {
   const navigateToSubmitLineup = useNavigateToSubmitLineup();
 
   const loadPlayers = () => {
-    PlayerService.load().then(getAllPlayers());
+    PlayerService.load().then();
   }
 
   return (
