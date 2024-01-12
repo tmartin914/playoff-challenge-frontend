@@ -49,10 +49,10 @@ export const ViewTeam = () => {
               { getTextField(lineup?.te, 'TE') }
               { getTextField(lineup?.k, 'K') }
               { getTextField(lineup?.dst, 'DST') }
-              <Button onClick={navigateToStandings}>Back</Button>
             </fieldset>
           ) : <></>
         }
+        <Button onClick={navigateToStandings}>Back</Button>
       </div>
     </>
   );
