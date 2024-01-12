@@ -3,6 +3,7 @@ import './submit-lineup.css';
 import PlayerService from "../services/player.service";
 import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useNavigateToRules } from "../navigation/hooks/useNavigateToRules";
+import { useNavigateToStandings } from "../navigation/hooks/useNavigateToStandings";
 
 export const SubmitLineup = () => {
   const ROUNDS = ['Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
@@ -24,6 +25,7 @@ export const SubmitLineup = () => {
   const [loading, setLoading] = useState(false);
   const [round, setRound] = useState(ROUNDS[0]);
   const navigateToRules = useNavigateToRules();
+  const navigateToStandings = useNavigateToStandings();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showFailureAlert, setShowFailureAlert] = useState(false);
   const [failureAlertMsg, setFailureAlertMsg] = useState('');
@@ -31,12 +33,12 @@ export const SubmitLineup = () => {
   const getAllPlayers = () => {
     PlayerService.getAll()
       .then(response => {
-        setQBs(response.data.filter(p => p.position === 'QB'));
-        setRBs(response.data.filter(p => p.position === 'RB' || p.position === 'FB'));
-        setWRs(response.data.filter(p => p.position === 'WR'));
-        setTEs(response.data.filter(p => p.position === 'TE'));
-        setKs(response.data.filter(p => p.position === 'K'));
-        setDSTs(response.data.filter(p => p.position === 'DST'));
+        setQBs(response.data.filter(p => p.position === 'QB').sort((a, b) => a.team > b.team ? 1 : -1));
+        setRBs(response.data.filter(p => p.position === 'RB' || p.position === 'FB').sort((a, b) => a.team > b.team ? 1 : -1));
+        setWRs(response.data.filter(p => p.position === 'WR').sort((a, b) => a.team > b.team ? 1 : -1));
+        setTEs(response.data.filter(p => p.position === 'TE').sort((a, b) => a.team > b.team ? 1 : -1));
+        setKs(response.data.filter(p => p.position === 'K').sort((a, b) => a.team > b.team ? 1 : -1));
+        setDSTs(response.data.filter(p => p.position === 'DST').sort((a, b) => a.team > b.team ? 1 : -1));
       });
   }
 
@@ -75,12 +77,19 @@ export const SubmitLineup = () => {
     }
   }
 
-  const quickSubmitLineup = () => {
-    if (teamId) {
-      const lineup = { teamId: teamId, round: round, qb: qbs[0].id, rb1: rbs[0].id, rb2: rbs[1].id, wr1: wrs[0].id, wr2: wrs[1].id, te: tes[0].id, k: ks[0].id, dst: dsts[0].id }
-      PlayerService.submitLineup(lineup).then();
-    }
-  }
+  // const quickSubmitLineup = () => {
+  //   if (teamId) {
+  //     const lineup = { teamId: teamId, round: round, qb: qbs[0].id, rb1: rbs[0].id, rb2: rbs[1].id, wr1: wrs[0].id, wr2: wrs[1].id, te: tes[0].id, k: ks[0].id, dst: dsts[0].id }
+  //     PlayerService.submitLineup(lineup).then(resp => {
+  //       if (resp.data.isSuccessful) {
+  //         setShowSuccessAlert(true);
+  //       } else {
+  //         setFailureAlertMsg(resp.data.message);
+  //         setShowFailureAlert(true);
+  //       }
+  //     });
+  //   }
+  // }
 
   useEffect(() => {
     getAllPlayers();
@@ -119,7 +128,7 @@ export const SubmitLineup = () => {
   }
 
   const isFormValid = () => {
-    return qb && rb1 && rb2 && wr1 && wr2 && te && k && dst && teamId;
+    return qb && rb1 && rb2 && wr1 && wr2 && te && k && dst && teamId && (rb1.id !== rb2.id) && (wr1.id !== wr2.id);
   }
 
   const getPlayerForSelect = (player) => {
@@ -141,7 +150,7 @@ export const SubmitLineup = () => {
             label="Round"
             onChange={(e) => setRound(e.target.value)}
           >
-            { ROUNDS.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>) }
+            { ROUNDS.map(r => <MenuItem key={r} value={r} disabled={r !== 'Wildcard'}>{r}</MenuItem>) }
           </Select>
         </FormControl>
         { ks && ks.length > 0 ?
@@ -244,8 +253,9 @@ export const SubmitLineup = () => {
             />
             <Button onClick={submitLineup} disabled={!isFormValid()}>Submit Lineup</Button>
             <Button onClick={loadLineup} disabled={!teamId}>Load Lineup</Button>
-            <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button>
+            {/* <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button> */}
             <Button onClick={navigateToRules}>View Rules/Scoring</Button>
+            <Button onClick={navigateToStandings}>View Standings</Button>
           </fieldset>
           : <></>
         }
@@ -263,14 +273,6 @@ export const SubmitLineup = () => {
         <DialogContent>{failureAlertMsg}</DialogContent>
         <Button onClick={() => setShowFailureAlert(false)}>OK</Button>
       </Dialog>
-      {/* <Alert show={showSuccessAlert} variant="success">
-        Successfully Created Lineup<hr/>
-        <Button onClick={() => setShowSuccessAlert(false)}>OK</Button>
-      </Alert>
-      <Alert show={showFailureAlert} variant="danger">
-        Could not create lineup. {failureAlertMsg}
-        <Button onClick={() => setShowFailureAlert(false)}>OK</Button>
-      </Alert> */}
     </>
   );
 }

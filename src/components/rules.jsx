@@ -9,6 +9,28 @@ export const Rules = () => {
   return (
     <>
       <div className="rules-wrapper">
+        <h3>Rules</h3>
+        <pre>
+          The team with the most points at the end of playoffs will be the winner. <br/>
+          Starting the same player back-to-back weeks will increase their scoring multiplier by 1 <br/><br/>
+          For example: <br/>
+            WR1: <br/>
+            Wildcard: Hill 10pts<br />
+            Divisional: Hill 11pts<br />
+            Conference: Hill 12pts<br />
+            Super Bowl: Lamb 13pts<br />
+            Will get 10 + (11 x 2) + (12 x 3) + 13 = 81 points at the WR1 position <br />
+            <br />
+            You can start a player who is on bye and multipliers will still go in effect: <br />
+            QB: <br/>
+            Wildcard: Purdy (bye)<br />
+            Divisional: Purdy 21pts<br />
+            Conference: Dak 22pts<br />
+            Super Bowl: Dak 23pts<br />
+            Will get 0 + (21 x 2) + 22 + (23 x 2) = 110 points at the QB position <br />
+            <br/>
+            Starting the same player all 4 weeks will be a x4 multiplier in the super bowl
+        </pre>
         <h3>Scoring</h3>
         <fieldset className="scoring-wrapper">
           <h4>Passing</h4>

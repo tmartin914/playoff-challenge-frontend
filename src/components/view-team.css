@@ -1,0 +1,10 @@
+.team-wrapper {
+  margin: 20px;
+}
+
+.positions-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 10px;
+}
