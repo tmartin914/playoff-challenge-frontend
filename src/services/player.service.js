@@ -1,33 +1,43 @@
-import http from "../http-common";
+import { useHandleFetch } from "../common/hooks/useHandleFetch";
 
-class PlayerService {
-  getAll() {
-    return http.get("/players");
+export const usePlayerService = () => {
+  const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+  const handleFetch = useHandleFetch();
+
+  const getPlayers = () => {
+    return handleFetch(`${BASE_URL}/players`);
   }
 
-  load() {
-    return http.get("/players/load");
+  const load = () => {
+    return handleFetch(`${BASE_URL}/players/load`);
   }
 
-  getLineup(teamId, round) {
-    return http.get(`/players/lineup/${teamId}/${round}`)
+  const getLineup = (teamId, round) => {
+    return handleFetch(`${BASE_URL}/players/lineup/${teamId}/${round}`);
   }
 
-  submitLineup(lineup) {
-    return http.post("/players/submitLineup", lineup)
+  const submitLineup = (lineup) => {
+    const options = {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(lineup)
+    };
+    return handleFetch(`${BASE_URL}/players/submitLineup`, options);
   }
 
-  getStandings() {
-    return http.get(`/players/getStandings`)
+  const getStandings = () => {
+    return handleFetch(`${BASE_URL}/players/getStandings`);
   }
 
-  getTeam(teamName) {
-    return http.get(`/players/getTeam/${teamName}`)
+  const getTeam = (teamName, round) => {
+    return handleFetch(`${BASE_URL}/players/getTeam/${teamName}/${round}`);
   }
 
-  createTeam(teamId, teamName) {
-    return http.get(`/players/createTeam/${teamId}/${teamName}`)
+  const createTeam = (teamId, teamName) => {
+    return handleFetch(`${BASE_URL}/players/createTeam/${teamId}/${teamName}`);
   }
+
+  return { getPlayers, load, getLineup, submitLineup, getStandings, getTeam, createTeam };
 }
-
-export default new PlayerService();

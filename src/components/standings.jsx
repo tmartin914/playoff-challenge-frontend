@@ -10,25 +10,29 @@ import Paper from '@mui/material/Paper';
 import { Button } from "@mui/material";
 import { useNavigateToSubmitLineup } from "../navigation/hooks/useNavigateToSubmitLineup";
 import { useNavigateToViewTeam } from "../navigation/hooks/useNavigateToViewTeam";
-import PlayerService from "../services/player.service";
+import { usePlayerService } from "../services/player.service";
 
 export const Standings = () => {
   const [standings, setStandings] = useState();
   const navigateToSubmitLineup = useNavigateToSubmitLineup();
   const navigateToViewTeam = useNavigateToViewTeam();
+  const { getStandings } = usePlayerService();
 
   useEffect(() => {
     const tempStandings = [];
-    PlayerService.getStandings().then(resp => {
-      const teams = resp.data;
-      if (teams && teams.length > 0) {
-        teams.forEach(team => {
-          team.totalPoints = 0;
-          tempStandings.push(team);
-        });
-      }
-      setStandings(tempStandings)
-    });
+    getStandings()
+      .then(teams => {
+        if (teams && teams.length > 0) {
+          teams.forEach(team => {
+            team.totalPoints = 0;
+            tempStandings.push(team);
+          });
+        }
+        setStandings(tempStandings)
+      })
+      .catch(err => {
+        console.log(`Unable to get standings. ${err}`);
+      });
   }, []);
 
   return (

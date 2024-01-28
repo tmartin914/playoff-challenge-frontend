@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './view-team.css';
-import PlayerService from "../services/player.service";
+import { usePlayerService } from "../services/player.service";
 import { Button, TextField } from "@mui/material";
 import { useNavigateToStandings } from "../navigation/hooks/useNavigateToStandings";
 import { useLocation } from "react-router";
@@ -11,14 +11,18 @@ export const ViewTeam = () => {
   const navigateToStandings = useNavigateToStandings();
   const location = useLocation();
   const data = location.state;
+  const { getTeam } = usePlayerService();
 
   const loadTeam = () => {
-    PlayerService.getTeam(data.team).then(resp => {
-      if (resp.data) {
-        setLineup(resp.data);
+    getTeam(data.team, 'Wildcard').then(team => {
+      if (team) {
+        setLineup(team);
         setLineupSet(true);
       }
-    });
+    })
+    .catch(err => {
+      console.log(`Unable to get team. ${err}`);
+    })
   }
 
   useEffect(() => {

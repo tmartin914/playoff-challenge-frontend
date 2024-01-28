@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import './submit-lineup.css';
-import PlayerService from "../services/player.service";
+import { usePlayerService } from "../services/player.service";
 import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useNavigateToRules } from "../navigation/hooks/useNavigateToRules";
 import { useNavigateToStandings } from "../navigation/hooks/useNavigateToStandings";
@@ -29,50 +29,55 @@ export const SubmitLineup = () => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showFailureAlert, setShowFailureAlert] = useState(false);
   const [failureAlertMsg, setFailureAlertMsg] = useState('');
+  const { getPlayers, getLineup, submitLineup} = usePlayerService();
 
   const getAllPlayers = () => {
-    PlayerService.getAll()
-      .then(response => {
-        setQBs(response.data.filter(p => p.position === 'QB').sort((a, b) => a.team > b.team ? 1 : -1));
-        setRBs(response.data.filter(p => p.position === 'RB' || p.position === 'FB').sort((a, b) => a.team > b.team ? 1 : -1));
-        setWRs(response.data.filter(p => p.position === 'WR').sort((a, b) => a.team > b.team ? 1 : -1));
-        setTEs(response.data.filter(p => p.position === 'TE').sort((a, b) => a.team > b.team ? 1 : -1));
-        setKs(response.data.filter(p => p.position === 'K').sort((a, b) => a.team > b.team ? 1 : -1));
-        setDSTs(response.data.filter(p => p.position === 'DST').sort((a, b) => a.team > b.team ? 1 : -1));
+    getPlayers()
+      .then(players => {
+        setQBs(players.filter(p => p.position === 'QB').sort((a, b) => a.team > b.team ? 1 : -1));
+        setRBs(players.filter(p => p.position === 'RB' || p.position === 'FB').sort((a, b) => a.team > b.team ? 1 : -1));
+        setWRs(players.filter(p => p.position === 'WR').sort((a, b) => a.team > b.team ? 1 : -1));
+        setTEs(players.filter(p => p.position === 'TE').sort((a, b) => a.team > b.team ? 1 : -1));
+        setKs(players.filter(p => p.position === 'K').sort((a, b) => a.team > b.team ? 1 : -1));
+        setDSTs(players.filter(p => p.position === 'DST').sort((a, b) => a.team > b.team ? 1 : -1));
+      })
+      .catch(err => {
+        console.log(`Unable to get players. ${err}`)
       });
   }
 
   const loadLineup = () => {
     if (teamId) {
       setLoading(true);
-      PlayerService.getLineup(teamId, round)
-        .then(response => {
-          if (response && response.data){
-            const test = qbs.find(q => q.id === response.data.qbId);
-            setQB(qbs.find(q => q.id === response.data.qbId));
-            setRB1(rbs.find(q => q.id === response.data.rb1Id));
-            setRB2(rbs.find(q => q.id === response.data.rb2Id));
-            setWR1(wrs.find(q => q.id === response.data.wr1Id));
-            setWR2(wrs.find(q => q.id === response.data.wr2Id));
-            setTE(tes.find(q => q.id === response.data.teId));
-            setK(ks.find(q => q.id === response.data.kId));
-            setDST(dsts.find(q => q.id === response.data.dstId));
+      getLineup(teamId, round)
+        .then(lineup => {
+          if (lineup){
+            setQB(qbs.find(q => q.id === lineup.qbId));
+            setRB1(rbs.find(q => q.id === lineup.rb1Id));
+            setRB2(rbs.find(q => q.id === lineup.rb2Id));
+            setWR1(wrs.find(q => q.id === lineup.wr1Id));
+            setWR2(wrs.find(q => q.id === lineup.wr2Id));
+            setTE(tes.find(q => q.id === lineup.teId));
+            setK(ks.find(q => q.id === lineup.kId));
+            setDST(dsts.find(q => q.id === lineup.dstId));
           }
           setLoading(false);
         })
+        .catch(err => {
+          console.log(`Unable to load lineup. ${err}`)
+        });
     }
   }
 
-  const submitLineup = () => {
+  const handleSubmitLineup = () => {
     if (teamId) {
       const lineup = { teamId: teamId, round: round, qb: qb.id, rb1: rb1.id, rb2: rb2.id, wr1: wr1.id, wr2: wr2.id, te: te.id, k: k.id, dst: dst.id }
-      PlayerService.submitLineup(lineup).then(resp => {
-        if (resp.data.isSuccessful) {
-          setShowSuccessAlert(true);
-        } else {
-          setFailureAlertMsg(resp.data.message);
-          setShowFailureAlert(true);
-        }
+      submitLineup(lineup).then(resp => {
+        setShowSuccessAlert(true);
+      })
+      .catch(err => {
+        setFailureAlertMsg(err.message);
+        setShowFailureAlert(true);
       });
     }
   }
@@ -251,7 +256,7 @@ export const SubmitLineup = () => {
               label="Team Id"
               sx={{ width: '100%', marginTop: '5px'}}
             />
-            <Button onClick={submitLineup} disabled={!isFormValid()} sx={{marginBottom: '10px'}}>Submit Lineup</Button>
+            <Button onClick={handleSubmitLineup} disabled={!isFormValid()} sx={{marginBottom: '10px'}}>Submit Lineup</Button>
             <Button onClick={loadLineup} disabled={!teamId} sx={{marginBottom: '10px'}}>Load Lineup</Button>
             {/* <Button onClick={quickSubmitLineup} disabled={!teamId}>Quick Submit Lineup</Button> */}
             <Button onClick={navigateToRules} sx={{marginBottom: '10px'}}>View Rules/Scoring</Button>
