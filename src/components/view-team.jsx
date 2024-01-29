@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './view-team.css';
 import { usePlayerService } from "../services/player.service";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useNavigateToStandings } from "../navigation/hooks/useNavigateToStandings";
 import { useLocation } from "react-router";
 
@@ -29,13 +29,21 @@ export const ViewTeam = () => {
     loadTeam();
   }, []);
 
-  const getTextField = (player, position) => {
-    return <TextField
+  const getPlayerInfo = (player, position) => {
+    return <Box sx={{ display: 'flex' }}>
+            <TextField
               variant="outlined"
               defaultValue={`${position}: ${player ? player.name : ''}`}
               disabled={true}
               sx={{width: '300px', margin: '5px'}}
-            />;
+            />
+            <TextField
+              variant="outlined"
+              defaultValue={`${player ? player.totalPoints : '0'}`}
+              disabled={true}
+              sx={{width: '70px', margin: '5px'}}
+            />
+           </Box>;
   }
 
   return (
@@ -45,14 +53,14 @@ export const ViewTeam = () => {
         { lineupSet ?
           (
             <fieldset className="positions-wrapper">
-              { getTextField(lineup?.qb, 'QB') }
-              { getTextField(lineup?.rb1, 'RB1') }
-              { getTextField(lineup?.rb2, 'RB2') }
-              { getTextField(lineup?.wr1, 'WR1') }
-              { getTextField(lineup?.wr2, 'WR2') }
-              { getTextField(lineup?.te, 'TE') }
-              { getTextField(lineup?.k, 'K') }
-              { getTextField(lineup?.dst, 'DST') }
+              { getPlayerInfo(lineup?.qb, 'QB') }
+              { getPlayerInfo(lineup?.rb1, 'RB1') }
+              { getPlayerInfo(lineup?.rb2, 'RB2') }
+              { getPlayerInfo(lineup?.wr1, 'WR1') }
+              { getPlayerInfo(lineup?.wr2, 'WR2') }
+              { getPlayerInfo(lineup?.te, 'TE') }
+              { getPlayerInfo(lineup?.k, 'K') }
+              { getPlayerInfo(lineup?.dst, 'DST') }
             </fieldset>
           ) : <></>
         }
